@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 
 // ✅ Fix: Localhost hata kar Environment Variable use karein
-const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_API_URL || "https://tasksync-backend.vercel.app/";
 const socket = io(SOCKET_URL);
 
 const NotificationHandler = () => {

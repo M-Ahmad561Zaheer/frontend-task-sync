@@ -11,7 +11,7 @@ import { io } from "socket.io-client";
 import ProfileModal from "./components/ProfileModal";
 import { updateProfile } from "./services/authService";
 
-const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
+const socket = io(import.meta.env.VITE_API_URL || "https://tasksync-backend.vercel.app");
 
 
 const App = () => {

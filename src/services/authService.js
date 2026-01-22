@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// ✅ Sahi Backend URL yahan set kar diya hai
+const BASE_URL = import.meta.env.VITE_API_URL || "https://task-sync-backend-weld.vercel.app";
 const API_URL = `${BASE_URL}/api/auth`;
 
-// ✅ Register function (Jo missing tha)
+// ✅ Register function
 export const register = async (userData) => {
   const res = await axios.post(`${API_URL}/register`, userData);
-  // Registration ke baad bhi agar aap token save karna chahte hain:
   if (res.data && res.data.token) {
     localStorage.setItem("token", res.data.token);
     localStorage.setItem("userId", res.data._id);
