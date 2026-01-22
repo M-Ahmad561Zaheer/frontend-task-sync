@@ -6,5 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    
   ],
+  build: {
+    chunkSizeWarningLimit: 1000, // 500 se barha kar 1000 kar diya
+  },
 })
