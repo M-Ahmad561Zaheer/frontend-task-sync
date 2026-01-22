@@ -67,8 +67,8 @@ const ProfileModal = ({ isOpen, onClose, user, onUpdate }) => {
                 <div className="group flex items-center justify-center gap-2">
                   <h2 className="text-2xl font-black tracking-tight">{user?.name}</h2>
                   <button 
-                    onClick={() => setIsEditing(true)}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-blue-500 transition-all"
+                        onClick={() => setIsEditing(true)}
+                        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 text-gray-400 hover:text-blue-500 transition-all"
                   >
                     <Edit2 size={16} />
                   </button>
