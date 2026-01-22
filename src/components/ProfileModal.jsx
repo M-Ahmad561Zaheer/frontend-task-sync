@@ -52,13 +52,20 @@ const ProfileModal = ({ isOpen, onClose, user, onUpdate }) => {
             <div className="text-center">
               {isEditing ? (
                 <div className="flex gap-2 items-center justify-center">
-                  <input 
+                  {/* <input 
                     type="text"
                     className="bg-gray-50 dark:bg-gray-800 border-2 border-blue-500 rounded-xl px-4 py-1 text-center font-bold text-xl outline-none"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     autoFocus
-                  />
+                  /> */}
+                  <input 
+  type="text"
+  className="bg-gray-50 dark:bg-gray-800 border-2 border-blue-500 rounded-xl px-2 py-1 text-center font-bold text-lg md:text-xl outline-none w-full max-w-[200px]"
+  value={newName}
+  onChange={(e) => setNewName(e.target.value)}
+  autoFocus
+/>
                   <button onClick={handleSave} className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
                     <Save size={18} />
                   </button>

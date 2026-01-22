@@ -16,6 +16,7 @@ const socket = io(import.meta.env.VITE_API_URL || "https://tasksync-backend.verc
 
 const App = () => {
   //const notificationSound = useMemo(() => new Audio('/frontend/frontend/notify.mp3'), []);
+  
   const notificationSound = useMemo(() => {
   const audio = new Audio("/notify.mp3");
   audio.load(); // File ko pre-load karega
@@ -95,7 +96,7 @@ const App = () => {
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
   const handleCreateTask = async (taskData) => {
-    try { await createTask(taskData); fetchTasks(); } catch (err) { toast.error("Error saving task"); }
+    try { await createTask(taskData); fetchTasks(); } catch (err) { console.error(err); toast.error("Error saving task"); }
   };
 
   const handleUpdateTask = async (id, taskData) => {

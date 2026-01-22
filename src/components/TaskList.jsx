@@ -54,6 +54,26 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
                     <h3 className="text-lg font-extrabold text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors">
                       {task.title}
                     </h3>
+                    {/* Task List Card ke andar */}
+<div className="mt-2">
+  <h3 className="font-bold text-lg">{task.title}</h3>
+  <p className="text-sm text-gray-600 dark:text-gray-400">{task.description}</p>
+
+  {/* ✅ Link Section: Agar link exist karta hai toh dikhao */}
+  {task.link && (
+    <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+      <a 
+        href={task.link.startsWith('http') ? task.link : `https://${task.link}`} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-bold hover:underline"
+      >
+        <LinkIcon size={14} /> {/* Lucide-react ka icon */}
+        View Resource / Link
+      </a>
+    </div>
+  )}
+</div>
                     
                     {/* ✅ Shared Badge Logic */}
                     {!isOwner && (
