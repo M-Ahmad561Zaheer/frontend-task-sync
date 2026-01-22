@@ -34,7 +34,11 @@ const Notifications = () => {
 
  const userId = localStorage.getItem("userId");
     if (userId) {
-      socket = io(import.meta.env.VITE_API_URL);
+      // Is line ko update karein:
+      socket = io(import.meta.env.VITE_API_URL, {
+        transports: ['polling'], // Vercel ke liye zaroori hai
+        withCredentials: true
+      });
       socket.emit("join", userId);
       
       // ✅ Fix: Backend wale event name 'taskShared' ko sunien
