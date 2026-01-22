@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* Ye line add karein taake class-based dark mode chale */
+@custom-variant dark (&:where(.dark, .dark *));
