@@ -67,21 +67,26 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
                     {task.description}
                   </p>
 
-                  {/* ✅ Link Section: Properly styled and placed */}
-                  {task.link && (
-                    <div className="inline-block mt-1">
-                      <a 
-                        href={task.link.startsWith('http') ? task.link : `https://${task.link}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800 transition-colors"
-                      >
-                        <LinkIcon size={14} />
-                        View Resource
-                      </a>
-                    </div>
-                  )}
-                  
+                  {/* ✅ Updated Clickable Link Section */}
+{task.link && (
+  <div className="mt-2">
+    <a 
+      href={task.link.startsWith('http') ? task.link : `https://${task.link}`} 
+      target="_blank" 
+      rel="noopener noreferrer"
+      // Added cursor-pointer and relative z-20 to ensure clickability
+      className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-bold bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 px-4 py-2 rounded-xl border border-blue-200 dark:border-blue-800 transition-all cursor-pointer relative z-20"
+      onClick={(e) => e.stopPropagation()} // Card ke click event ko rokne ke liye
+    >
+      <LinkIcon size={14} strokeWidth={3} />
+      <span>Open Resource</span>
+      {/* External Link ka icon */}
+      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
+    </a>
+  </div>
+)}
                   <div className="flex flex-wrap gap-2 pt-1">
                     <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyles(task.status)}`}>
                       <Clock size={12} />
