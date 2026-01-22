@@ -19,6 +19,9 @@ const NotificationHandler = () => {
 
     // 🔔 Real-time listener
     socket.on("taskShared", (data) => {
+      const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"); // Test sound
+        audio.play();
+        toast.success(data.message);
       console.log("Notification Received:", data);
       toast.success(data.message || "New Task Update!", {
         duration: 5000,
