@@ -1,28 +1,28 @@
 import React from "react";
 import { shareTask } from "../services/taskService";
-// ✅ Link icon yahan add kar diya hai
-import { Edit3, Trash2, Share2, Calendar, Clock, CheckCircle2, User, Link as LinkIcon } from "lucide-react";
+import { Edit3, Trash2, Share2, Calendar, Clock, CheckCircle2, User } from "lucide-react";
 
 const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
   const currentUserId = localStorage.getItem("userId");
 
-  const handleShare = async (taskId) => {
-    const email = prompt("Enter the Email address of the person you want to share with:");
-    if (!email) return;
+ const handleShare = async (taskId) => {
+  const email = prompt("Enter the Email address of the person you want to share with:");
+  if (!email) return;
 
-    if (!email.includes("@")) {
-      alert("Please enter a valid email address!");
-      return;
-    }
+  // Email format validation (Basic)
+  if (!email.includes("@")) {
+    alert("Please enter a valid email address!");
+    return;
+  }
 
-    try {
-      await shareTask(taskId, email);
-      alert(`✅ Task Shared with ${email}!`);
-      if (fetchTasks) fetchTasks();
-    } catch (err) {
-      alert(err.response?.data?.message || "Sharing failed!");
-    }
-  };
+  try {
+    await shareTask(taskId, email); // email bhej rahe hain
+    alert(`✅ Task Shared with ${email}!`);
+    if(fetchTasks) fetchTasks();
+  } catch (err) {
+    alert(err.response?.data?.message || "Sharing failed!");
+  }
+};
 
   const getStatusStyles = (status) => {
     switch (status) {
@@ -40,6 +40,7 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
         </div>
       ) : (
         tasks.map((task) => {
+          // Check karein ke user owner hai ya nahi
           const isOwner = task.owner === currentUserId || !task.owner;
 
           return (
@@ -48,12 +49,13 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
               className="group bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-800"
             >
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div className="flex-1 space-y-3">
+                <div className="flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-lg font-extrabold text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors">
                       {task.title}
                     </h3>
                     
+                    {/* ✅ Shared Badge Logic */}
                     {!isOwner && (
                       <span className="flex items-center gap-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase border border-purple-200 dark:border-purple-800">
                         <User size={10} /> Shared with me
@@ -66,28 +68,8 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
                   <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                     {task.description}
                   </p>
-
-                  {/* ✅ Updated Clickable Link Section */}
-{task.link && (
-  <div className="mt-2">
-    <a 
-      href={task.link.startsWith('http') ? task.link : `https://${task.link}`} 
-      target="_blank" 
-      rel="noopener noreferrer"
-      // Added cursor-pointer and relative z-20 to ensure clickability
-      className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-bold bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 px-4 py-2 rounded-xl border border-blue-200 dark:border-blue-800 transition-all cursor-pointer relative z-20"
-      onClick={(e) => e.stopPropagation()} // Card ke click event ko rokne ke liye
-    >
-      <LinkIcon size={14} strokeWidth={3} />
-      <span>Open Resource</span>
-      {/* External Link ka icon */}
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-      </svg>
-    </a>
-  </div>
-)}
-                  <div className="flex flex-wrap gap-2 pt-1">
+                  
+                  <div className="flex flex-wrap gap-2 pt-2">
                     <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyles(task.status)}`}>
                       <Clock size={12} />
                       {task.status}
@@ -104,6 +86,7 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
                 
                 {/* Action Buttons */}
                 <div className="flex sm:flex-col lg:flex-row gap-2 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
+                  {/* Share button sirf owner ko dikhayen */}
                   {isOwner && (
                     <button 
                       onClick={() => handleShare(task._id)}
@@ -122,6 +105,7 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks }) => {
                     <span className="hidden lg:inline">Edit</span>
                   </button>
                   
+                  {/* Delete button sirf owner ko dikhayen */}
                   {isOwner && (
                     <button 
                       onClick={() => onDelete(task._id)}
