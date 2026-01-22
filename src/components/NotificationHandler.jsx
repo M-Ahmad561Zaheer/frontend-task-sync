@@ -2,20 +2,18 @@ import { useEffect } from "react";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 
+// ✅ Fix: Localhost hata kar Environment Variable use karein
+const SOCKET_URL = import.meta.env.VITE_API_URL || "https://tasksync-backend.vercel.app/";
+const socket = io(SOCKET_URL);
+
 const NotificationHandler = () => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     
-    if (!userId) return; // Agar user login nahi toh kuch na karo
-
-    // ✅ Socket connection sirf tab banega jab userId hogi
-    const socket = io("https://task-sync-backend-weld.vercel.app", {
-      transports: ['polling'],
-      withCredentials: true
-    });
-
-    socket.emit("join", userId);
-    console.log("Connected to notification room:", userId);
+    if (userId) {
+      socket.emit("join", userId);
+      console.log("Connected to notification room:", userId);
+    }
 
     // 🔔 Real-time listener
     socket.on("taskShared", (data) => {
@@ -32,9 +30,8 @@ const NotificationHandler = () => {
       });
     });
 
-    // Cleanup: Jab component band ho toh socket bhi band ho jaye
     return () => {
-      socket.disconnect();
+      socket.off("taskShared");
     };
   }, []);
 
