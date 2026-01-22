@@ -112,7 +112,7 @@ const TaskForm = ({ onCreate, editingTask, onUpdate }) => {
             </div>
           </div>
 
-          {/* Attachment URL */}
+          {/* Attachment URL 
           <div className="space-y-1">
             <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1 flex items-center gap-2">
               <Link size={14} /> Attachment Link
@@ -124,7 +124,7 @@ const TaskForm = ({ onCreate, editingTask, onUpdate }) => {
               onChange={(e) => setFormData({...formData, attachment: e.target.value})}
               className="w-full border-2 border-gray-100 dark:border-gray-800 p-3 rounded-xl dark:bg-gray-800 focus:border-blue-500 outline-none transition-all dark:text-white"
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Submit Button */}
