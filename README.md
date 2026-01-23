@@ -1,49 +1,38 @@
-⚙️ TaskSync - Backend (Node.js & Express)
-TaskSync is a robust server-side application built to manage data flow, secure user authentication, and enable real-time communication for a seamless task management experience.
+🚀 TaskSync - Frontend (React + Vite)
+TaskSync is a modern, real-time task management dashboard designed for seamless collaboration. Built with React and Tailwind CSS, it offers a fast and responsive user experience.
 
 ✨ Key Features
-User Authentication: Secure Signup/Login using JWT for session management and Bcrypt for password hashing.
+Real-time Notifications: Instant alerts for shared tasks using Socket.io-client.
 
-RESTful API: Clean and structured endpoints for all Task CRUD operations.
+Smart Dashboard: Sleek UI with dynamic Dark/Light mode support.
 
-Real-time Communication: Integrated Socket.io for instant task sharing and notifications.
+Task Management: Full CRUD operations (Create, Read, Update, Delete) with link support.
 
-Security: Configured CORS and environment variables to protect sensitive data.
+Team Collaboration: Share tasks instantly by entering a user's email address.
 
-Database Management: MongoDB Atlas with Mongoose for efficient cloud data storage.
+Secure Access: Protected routes and session management using JWT.
 
 🛠️ Tech Stack
-Runtime: Node.js
+Framework: React.js (Vite)
 
-Framework: Express.js
+Styling: Tailwind CSS (Responsive Design)
 
-Database: MongoDB Atlas (NoSQL)
+Icons: Lucide-React
 
-Real-time Engine: Socket.io
+Real-time: Socket.io-client
 
-Authentication: JWT & Bcrypt
-
-🚀 API Endpoints
-POST /api/auth/register - Register a new user
-
-POST /api/auth/login - User login & JWT generation
-
-GET /api/tasks - Get all user tasks
-
-POST /api/tasks - Create a new task with links
-
-POST /api/tasks/share - Share task with others via email
+HTTP Client: Axios for API communication
 
 🚀 Getting Started
-Clone the repository: git clone https://github.com/M-Ahmad561Zaheer/tasksync-backend.git
+Clone the repository: git clone https://github.com/M-Ahmad561Zaheer/tasksync-frontend.git
 
 Install dependencies: npm install
 
-Configure Environment Variables: Create a .env file and add: MONGO_URI=your_mongodb_uri PORT=5000 JWT_SECRET=your_secret_key
+Configure Environment Variables: Create a .env file and add your backend URL: VITE_API_URL=http://localhost:5000
 
-Start the server: npm start
+Run the development server: npm run dev
 
-🔗 Frontend Repository
-Client-side: https://github.com/M-Ahmad561Zaheer/tasksync-frontend
+🔗 Backend Repository
+Server-side: https://github.com/M-Ahmad561Zaheer/tasksync-backend [(https://az-tasksync.vercel.app/)]
 
-Developed by AZ-Developers
+Developed with ❤️ by AZ-Developers
