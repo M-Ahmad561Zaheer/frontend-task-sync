@@ -1,16 +1,49 @@
-# React + Vite
+⚙️ TaskSync - Backend (Node.js & Express)
+TaskSync is a robust server-side application built to manage data flow, secure user authentication, and enable real-time communication for a seamless task management experience.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✨ Key Features
+User Authentication: Secure Signup/Login using JWT for session management and Bcrypt for password hashing.
 
-Currently, two official plugins are available:
+RESTful API: Clean and structured endpoints for all Task CRUD operations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Real-time Communication: Integrated Socket.io for instant task sharing and notifications.
 
-## React Compiler
+Security: Configured CORS and environment variables to protect sensitive data.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Database Management: MongoDB Atlas with Mongoose for efficient cloud data storage.
 
-## Expanding the ESLint configuration
+🛠️ Tech Stack
+Runtime: Node.js
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Framework: Express.js
+
+Database: MongoDB Atlas (NoSQL)
+
+Real-time Engine: Socket.io
+
+Authentication: JWT & Bcrypt
+
+🚀 API Endpoints
+POST /api/auth/register - Register a new user
+
+POST /api/auth/login - User login & JWT generation
+
+GET /api/tasks - Get all user tasks
+
+POST /api/tasks - Create a new task with links
+
+POST /api/tasks/share - Share task with others via email
+
+🚀 Getting Started
+Clone the repository: git clone https://github.com/M-Ahmad561Zaheer/tasksync-backend.git
+
+Install dependencies: npm install
+
+Configure Environment Variables: Create a .env file and add: MONGO_URI=your_mongodb_uri PORT=5000 JWT_SECRET=your_secret_key
+
+Start the server: npm start
+
+🔗 Frontend Repository
+Client-side: https://github.com/M-Ahmad561Zaheer/tasksync-frontend
+
+Developed by AZ-Developers
