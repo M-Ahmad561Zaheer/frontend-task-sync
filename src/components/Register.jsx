@@ -10,22 +10,25 @@ const Register = ({ onSuccess, toggle }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const handleRegister = async (e) => {
+  // ✅ Backend URL switch logic (Auto-detect)
+  const isLocal = window.location.hostname === "localhost";
+  const BACKEND_URL = isLocal 
+    ? "http://localhost:5000" 
+    : "https://task-sync-backend.vercel.app";
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
       const data = await register({ name, email, password });
       
-      // ✅ Token aur User data save karein taake automatic login ho jaye
       if (data && data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data._id);
         localStorage.setItem("user", JSON.stringify({ name: data.name, email: data.email }));
         
-        // Success Message
-        alert("✅ Account created and logged in successfully!");
-        onSuccess(); // Yeh App.js ko batayega ke user loggedIn hai
+        onSuccess(); 
       }
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
@@ -34,11 +37,19 @@ const handleRegister = async (e) => {
     }
   };
 
+  // ✅ Social Auth Handlers
+  const handleGoogleAuth = () => {
+    window.location.href = `${BACKEND_URL}/api/auth/google`;
+  };
+
+  const handleGithubAuth = () => {
+    window.location.href = `${BACKEND_URL}/api/auth/github`;
+  };
+
   return (
     <div className="flex h-screen items-center justify-center bg-[#f3f4f6] dark:bg-[#0f172a] px-4 transition-colors duration-500">
       <div className="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800">
         
-        {/* Header Section */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mb-4">
             <User className="text-blue-600 dark:text-blue-400" size={32} />
@@ -54,7 +65,6 @@ const handleRegister = async (e) => {
         )}
 
         <form onSubmit={handleRegister} className="space-y-5">
-          {/* Full Name Field */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Full Name</label>
             <div className="relative group">
@@ -69,7 +79,6 @@ const handleRegister = async (e) => {
             </div>
           </div>
 
-          {/* Email Field */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Email Address</label>
             <div className="relative group">
@@ -84,7 +93,6 @@ const handleRegister = async (e) => {
             </div>
           </div>
 
-          {/* Password Field */}
           <div className="space-y-1">
             <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Password</label>
             <div className="relative group">
@@ -108,7 +116,7 @@ const handleRegister = async (e) => {
 
           <button 
             disabled={loading}
-            className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg shadow-blue-500/30 transition-all transform active:scale-[0.98] ${
+            className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg transition-all transform active:scale-[0.98] ${
               loading ? 'bg-blue-400 cursor-wait' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
             }`}
           >
@@ -116,18 +124,23 @@ const handleRegister = async (e) => {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center"><span className="w-full border-t dark:border-gray-800"></span></div>
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-gray-900 px-2 text-gray-500 font-bold">Or sign up with</span></div>
         </div>
 
-        {/* Social Buttons */}
+        {/* ✅ Social Auth Buttons Added */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <button className="flex items-center justify-center gap-2 py-2 border-2 border-gray-100 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium text-sm dark:text-white">
+          <button 
+            onClick={handleGoogleAuth}
+            className="flex items-center justify-center gap-2 py-2 border-2 border-gray-100 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium text-sm dark:text-white"
+          >
             <Chrome size={18} className="text-red-500" /> Google
           </button>
-          <button className="flex items-center justify-center gap-2 py-2 border-2 border-gray-100 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium text-sm dark:text-white">
+          <button 
+            onClick={handleGithubAuth}
+            className="flex items-center justify-center gap-2 py-2 border-2 border-gray-100 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-medium text-sm dark:text-white"
+          >
             <Github size={18} /> GitHub
           </button>
         </div>
