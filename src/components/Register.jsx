@@ -14,7 +14,7 @@ const Register = ({ onSuccess, toggle }) => {
   const isLocal = window.location.hostname === "localhost";
   const BACKEND_URL = isLocal 
     ? "http://localhost:5000" 
-    : "https://task-sync-backend.vercel.app";
+    : "https://tasksync-backend.vercel.app";
 
   const handleRegister = async (e) => {
     e.preventDefault();

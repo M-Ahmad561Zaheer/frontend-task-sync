@@ -13,7 +13,7 @@ const Login = ({ onSuccess, toggle }) => {
   const isLocal = window.location.hostname === "localhost";
   const BACKEND_URL = isLocal 
     ? "http://localhost:5000" 
-    : "https://task-sync-backend.vercel.app";
+    : "https://tasksync-backend.vercel.app";
 
   const handleLogin = async (e) => {
     e.preventDefault();

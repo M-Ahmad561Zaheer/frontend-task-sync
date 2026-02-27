@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // ✅ Base URL configuration
-const BASE_URL = import.meta.env.VITE_API_URL || "https://task-sync-backend-weld.vercel.app";
+const BASE_URL = import.meta.env.VITE_API_URL || "https://tasksync-backend.vercel.app";
 
 const api = axios.create({
   baseURL: BASE_URL,
