@@ -21,17 +21,12 @@ const Login = ({ onSuccess, toggle }) => {
     setLoading(true);
     try {
       const data = await login({ email, password });
-     // ✅ Isay aisay update karein
-if (data && data.token) {
-  localStorage.setItem("token", data.token);
-  // User object mein _id lazmi rakhein
-  localStorage.setItem("user", JSON.stringify({ 
-    _id: data._id, 
-    name: data.name, 
-    email: data.email 
-  }));
-  onSuccess();
-} else {
+      if (data && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data._id);
+        localStorage.setItem("user", JSON.stringify({ name: data.name, email: data.email }));
+        onSuccess();
+      } else {
         setError("Invalid credentials. Please try again.");
       }
     } catch (err) {
