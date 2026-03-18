@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { shareTask, updateStatus } from "../services/taskService";
-import { Edit3, Trash2, Share2, Calendar, Clock, CheckCircle2, User, Link, ExternalLink } from "lucide-react";
+import { 
+  Edit3, Trash2, Share2, Calendar, Clock, CheckCircle2, 
+  User, Link as LinkIcon, ExternalLink, MoreVertical, AlertCircle 
+} from "lucide-react";
 
 const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks, isSharedView = false }) => {
   const currentUserId = localStorage.getItem("userId");
@@ -33,19 +36,23 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks, isSharedView = 
 
   const getStatusStyles = (status) => {
     switch (status) {
-      case "Completed": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200";
-      case "In Progress": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200";
-      default: return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200";
+      case "Completed": return "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800/50";
+      case "In Progress": return "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 border-blue-100 dark:border-blue-800/50";
+      default: return "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border-amber-100 dark:border-amber-800/50";
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {tasks.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400 font-medium italic">
-            {isSharedView ? "No tasks shared with you yet." : "No tasks found. Time to create one! ✨"}
+        <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 dark:bg-gray-900/20 rounded-[2.5rem] border-2 border-dashed border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-full shadow-sm mb-4">
+             <AlertCircle size={32} className="text-gray-300" />
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 font-bold tracking-tight">
+            {isSharedView ? "No shared tasks yet." : "Your task list is a clean slate."}
           </p>
+          <p className="text-xs text-gray-400 mt-1 italic">Ready to get productive? ✨</p>
         </div>
       ) : (
         tasks.map((task) => {
@@ -56,87 +63,130 @@ const TaskList = ({ tasks, setEditingTask, onDelete, fetchTasks, isSharedView = 
               : task.owner?.toString() === currentUserId;
 
           const attachmentUrl = task.attachments?.[0] || null;
+          const isUpdating = updatingStatusId === task._id;
 
           return (
-            <div key={task._id} className="group bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-800">
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-lg font-extrabold text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors">
+            <div key={task._id} 
+              className={`group relative bg-white dark:bg-gray-900 p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col gap-4 ${isUpdating ? 'opacity-60 grayscale-[0.5]' : ''}`}>
+              
+              <div className="flex justify-between items-start gap-4">
+                <div className="space-y-3 flex-1">
+                  {/* Title & Badges */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h3 className="text-xl font-black tracking-tight text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors">
                       {task.title}
                     </h3>
+                    
                     {(task.isShared || isSharedView) && (
-                      <span className="flex items-center gap-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase border border-purple-200 dark:border-purple-800">
-                        <User size={10} /> Shared with me
-                      </span>
+                      <div className="flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border border-purple-100 dark:border-purple-800/50">
+                        <User size={12} strokeWidth={3} /> {isSharedView ? `From ${task.owner?.name || 'Partner'}` : 'Collaborative'}
+                      </div>
                     )}
-                    {isSharedView && task.owner?.name && (
-                      <span className="text-[10px] text-gray-400 font-medium">by {task.owner.name}</span>
+                    
+                    {task.status === "Completed" && (
+                      <div className="bg-emerald-500 p-1 rounded-full">
+                        <CheckCircle2 size={14} className="text-white" />
+                      </div>
                     )}
-                    {task.status === "Completed" && <CheckCircle2 size={18} className="text-green-500" />}
                   </div>
 
+                  {/* Description */}
                   {task.description && (
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{task.description}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-2xl font-medium">
+                      {task.description}
+                    </p>
                   )}
 
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${getStatusStyles(task.status)}`}>
-                      <Clock size={12} />{task.status}
-                    </span>
+                  {/* Metadata & Attachment */}
+                  <div className="flex flex-wrap items-center gap-4 pt-2">
+                    <div className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-tighter border shadow-sm ${getStatusStyles(task.status)}`}>
+                      <Clock size={14} strokeWidth={2.5} /> {task.status}
+                    </div>
+
                     {task.dueDate && (
-                      <span className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-xs font-bold">
-                        <Calendar size={12} />{new Date(task.dueDate).toLocaleDateString()}
-                      </span>
+                      <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-4 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-tighter border border-gray-100 dark:border-gray-700">
+                        <Calendar size={14} /> {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      </div>
+                    )}
+
+                    {attachmentUrl && (
+                      <a href={attachmentUrl} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-[11px] font-black uppercase tracking-tighter text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/10 px-4 py-1.5 rounded-xl border border-blue-100 dark:border-blue-800 hover:bg-blue-600 hover:text-white transition-all group/link"
+                      >
+                        <LinkIcon size={14} /> Link 
+                        <ExternalLink size={12} className="opacity-0 group-hover/link:opacity-100 -ml-1 transition-all" />
+                      </a>
                     )}
                   </div>
-
-                  {attachmentUrl && (
-                    <a href={attachmentUrl} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 mt-1 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800"
-                    >
-                      <Link size={12} className="shrink-0" />
-                      <span className="truncate max-w-[250px]">{attachmentUrl}</span>
-                      <ExternalLink size={10} className="shrink-0 opacity-60" />
-                    </a>
-                  )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex sm:flex-col lg:flex-row gap-2 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
-                  {isOwner && !isSharedView && (
+                {/* Desktop Actions Section */}
+                <div className="hidden sm:flex items-center gap-1 bg-gray-50 dark:bg-gray-800/50 p-1.5 rounded-2xl border border-gray-100 dark:border-gray-700">
+                  {isOwner && !isSharedView ? (
                     <>
-                      <button onClick={() => handleShare(task._id)}
-                        className="flex-1 flex items-center justify-center gap-1 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white p-2 sm:px-3 rounded-lg text-xs font-bold transition-all border border-green-200">
-                        <Share2 size={16} /><span className="hidden lg:inline">Share</span>
+                      <button onClick={() => handleShare(task._id)} className="p-2.5 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all" title="Share Task">
+                        <Share2 size={18} />
                       </button>
-                      <button onClick={() => setEditingTask(task)}
-                        className="flex-1 flex items-center justify-center gap-1 bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white p-2 sm:px-3 rounded-lg text-xs font-bold transition-all border border-amber-200">
-                        <Edit3 size={16} /><span className="hidden lg:inline">Edit</span>
+                      <button onClick={() => setEditingTask(task)} className="p-2.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all" title="Edit Task">
+                        <Edit3 size={18} />
                       </button>
-                      <button onClick={() => onDelete(task._id)}
-                        className="flex-1 flex items-center justify-center gap-1 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white p-2 sm:px-3 rounded-lg text-xs font-bold transition-all border border-red-200">
-                        <Trash2 size={16} /><span className="hidden lg:inline">Delete</span>
+                      <button onClick={() => onDelete(task._id)} className="p-2.5 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all" title="Delete Task">
+                        <Trash2 size={18} />
                       </button>
                     </>
-                  )}
-
-                  {isSharedView && (
-                    <select value={task.status} disabled={updatingStatusId === task._id}
-                      onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                      className={`text-xs font-bold px-3 py-2 rounded-lg border transition-all outline-none cursor-pointer w-full sm:w-auto
-                        ${task.status === "Completed" ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
-                          : task.status === "In Progress" ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"
-                          : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800"}
-                        ${updatingStatusId === task._id ? "opacity-50 cursor-wait" : ""}`}
-                    >
-                      <option value="Pending">🕒 Pending</option>
-                      <option value="In Progress">🚀 In Progress</option>
-                      <option value="Completed">✅ Completed</option>
-                    </select>
+                  ) : isSharedView && (
+                    <div className="px-2">
+                       <select 
+                        value={task.status} 
+                        disabled={isUpdating}
+                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                        className="bg-transparent text-xs font-black uppercase tracking-widest outline-none cursor-pointer py-1"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">Working</option>
+                        <option value="Completed">Done</option>
+                      </select>
+                    </div>
                   )}
                 </div>
               </div>
+
+              {/* Mobile Actions (Visible on small screens) */}
+              <div className="sm:hidden flex gap-2 pt-4 border-t border-gray-50 dark:border-gray-800">
+                 {isOwner && !isSharedView ? (
+                   <>
+                    <button onClick={() => handleShare(task._id)} className="flex-1 flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 py-3 rounded-xl text-xs font-black uppercase tracking-widest border border-emerald-100">
+                        <Share2 size={16} /> Share
+                    </button>
+                    <button onClick={() => onDelete(task._id)} className="flex-1 flex items-center justify-center gap-2 bg-red-50 text-red-600 py-3 rounded-xl text-xs font-black uppercase tracking-widest border border-red-100">
+                        <Trash2 size={16} /> Delete
+                    </button>
+                   </>
+                 ) : isSharedView && (
+                   <div className="w-full bg-blue-50 dark:bg-blue-900/20 rounded-xl p-1">
+                      <select 
+                        value={task.status} 
+                        disabled={isUpdating}
+                        onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                        className="w-full bg-transparent text-center text-xs font-black uppercase tracking-widest p-2 outline-none"
+                      >
+                        <option value="Pending">🕒 Set Pending</option>
+                        <option value="In Progress">🚀 Set Working</option>
+                        <option value="Completed">✅ Set Done</option>
+                      </select>
+                   </div>
+                 )}
+              </div>
+
+              {/* Status Update Pulse */}
+              {isUpdating && (
+                <div className="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-[1px] flex items-center justify-center rounded-[2rem] z-10">
+                   <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg border border-gray-100 dark:border-gray-700">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-ping" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">Syncing...</span>
+                   </div>
+                </div>
+              )}
             </div>
           );
         })
