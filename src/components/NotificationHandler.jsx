@@ -9,7 +9,7 @@ const NotificationHandler = () => {
     if (!userId) return; // Agar user login nahi toh kuch na karo
 
     // ✅ Socket connection sirf tab banega jab userId hogi
-    const socket = io("https://task-sync-backend-weld.vercel.app", {
+    const socket = io("https://task-sync-backend.vercel.app", {
       transports: ['polling'],
       withCredentials: true
     });

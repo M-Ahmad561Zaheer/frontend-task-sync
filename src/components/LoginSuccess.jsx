@@ -11,22 +11,23 @@ const LoginSuccess = ({ onSuccess }) => {
 
     if (token && userData) {
       try {
-        // 1. Token save karein
+        const parsedUser = JSON.parse(decodeURIComponent(userData));
+
         localStorage.setItem("token", token);
-        
-        // 2. User data ko decode aur parse karke check karein
-        const decodedUser = decodeURIComponent(userData);
-        localStorage.setItem("user", decodedUser);
+        localStorage.setItem("user", JSON.stringify({
+          name: parsedUser.name,
+          email: parsedUser.email,
+        }));
 
-        // 3. User ID agar backend se alag aa rahi hai (Optional but good)
-        const parsedUser = JSON.parse(decodedUser);
-        if (parsedUser.id) localStorage.setItem("userId", parsedUser.id);
+        // ✅ JWT se userId nikalo (backend _id bhejta hai token mein)
+        const base64Payload = token.split(".")[1];
+        const decoded = JSON.parse(atob(base64Payload));
+        if (decoded.id) localStorage.setItem("userId", decoded.id);
 
-        // 4. App state update karein aur redirect
-        onSuccess(); 
-        navigate("/dashboard");
+        onSuccess();
+        navigate("/");
       } catch (err) {
-        console.error("Error parsing user data:", err);
+        console.error("Login parse error:", err);
         navigate("/login");
       }
     } else {

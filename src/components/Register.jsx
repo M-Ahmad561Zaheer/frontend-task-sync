@@ -12,8 +12,8 @@ const Register = ({ onSuccess, toggle }) => {
 
   // ✅ Backend URL switch logic (Auto-detect)
   const isLocal = window.location.hostname === "localhost";
-  const BACKEND_URL = isLocal 
-    ? "http://localhost:5000" 
+  const BACKEND_URL = isLocal
+    ? "http://localhost:5000"
     : "https://tasksync-backend.vercel.app";
 
   const handleRegister = async (e) => {
@@ -28,7 +28,7 @@ const Register = ({ onSuccess, toggle }) => {
         localStorage.setItem("userId", data._id);
         localStorage.setItem("user", JSON.stringify({ name: data.name, email: data.email }));
         
-        onSuccess(); 
+        onSuccess();
       }
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");

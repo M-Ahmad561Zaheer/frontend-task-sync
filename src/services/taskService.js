@@ -1,51 +1,31 @@
 import axios from "axios";
 
-// ✅ Base URL configuration
-const BASE_URL = import.meta.env.VITE_API_URL || "https://tasksync-backend.vercel.app";
+// ✅ Fix: isLocal check se sahi env var use karo + trailing slash hata do
+const isLocal = window.location.hostname === "localhost";
+const BASE_URL = (
+  isLocal
+    ? import.meta.env.VITE_API_URL_LOCAL || "http://localhost:5000"
+    : import.meta.env.VITE_API_URL || "https://tasksync-backend.vercel.app"
+).replace(/\/$/, "");
 
 const api = axios.create({
   baseURL: BASE_URL,
 });
 
-// ✅ Axios instance with token interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+}, (error) => Promise.reject(error));
 
-// --- Task APIs ---
-
-// 1. Get all tasks (Interceptors automatically add token)
 export const getTasks = (params = {}) => api.get("/api/tasks", { params });
-
-// 2. Shared Tasks List
-export const getSharedTasks = () => api.get("/api/tasks/shared/list"); 
-
-// 3. Create Task
+export const getSharedTasks = () => api.get("/api/tasks/shared/list");
 export const createTask = (task) => api.post("/api/tasks", task);
-
-// 4. Update Task
 export const updateTask = (id, task) => api.put(`/api/tasks/${id}`, task);
 
-// 5. Delete Task
+// ✅ Alag endpoint - owner + shared user dono use kar sakte hain
+export const updateStatus = (id, status) => api.put(`/api/tasks/${id}/status`, { status });
 export const deleteTask = (id) => api.delete(`/api/tasks/${id}`);
-
-// 6. Share Task via Email
-export const shareTask = (id, email) =>
-  api.put(`/api/tasks/${id}/share`, { email }); 
-
-// 7. Attachments Upload
-export const uploadAttachments = (id, files) => {
-  const form = new FormData();
-  Array.from(files).forEach((f) => form.append("files", f));
-  return api.post(`/api/tasks/${id}/attachments`, form, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
+export const shareTask = (id, email) => api.put(`/api/tasks/${id}/share`, { email });
 
 export default api;
