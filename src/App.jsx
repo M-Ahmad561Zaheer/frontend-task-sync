@@ -12,8 +12,9 @@ import ChatSidebar from "./components/ChatSidebar";
 import { getTasks, getSharedTasks, createTask, updateTask, deleteTask } from "./services/taskService";
 import { updateProfile } from "./services/authService";
 import { setOnlineStatus } from "./services/chatService";
+import { getTagColor } from "./components/TaskForm"; // ✅ Tag colors
 import { Toaster, toast } from "react-hot-toast";
-import { Moon, Sun, LogOut, LayoutDashboard, Search, Filter as FilterIcon, Bell, MessageCircle } from "lucide-react";
+import { Moon, Sun, LogOut, LayoutDashboard, Search, Filter as FilterIcon, Bell, MessageCircle, Tag, X } from "lucide-react";
 
 const App = () => {
   const notificationSound = useMemo(() => {
@@ -29,12 +30,13 @@ const App = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [activeTag, setActiveTag] = useState(null); // ✅ Tag filter state
   const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("token")));
   const [showRegister, setShowRegister] = useState(false);
   const [dark, setDark] = useState(() => localStorage.getItem("dark") === "1");
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showChat, setShowChat] = useState(false); // ✅ Chat sidebar toggle
+  const [showChat, setShowChat] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const pollingRef = useRef(null);
@@ -74,12 +76,8 @@ const App = () => {
     }
   }, [notificationSound]);
 
-  // ✅ Chat users: Shared tasks ke owners + My tasks ke sharedWith users
-  // Unique users collect karo jisse chat kar sako
   const chatUsers = useMemo(() => {
     const usersMap = new Map();
-
-    // Shared tasks ke owners (jo mujhse share kiya)
     sharedTasks.forEach((task) => {
       if (task.owner?._id && task.owner._id !== currentUser.id) {
         usersMap.set(task.owner._id, {
@@ -89,8 +87,6 @@ const App = () => {
         });
       }
     });
-
-    // My tasks ke sharedWith users (jinhe maine share kiya)
     tasks.forEach((task) => {
       if (task.sharedWith?.length) {
         task.sharedWith.forEach((user) => {
@@ -105,9 +101,16 @@ const App = () => {
         });
       }
     });
-
     return Array.from(usersMap.values());
   }, [tasks, sharedTasks, currentUser.id]);
+
+  // ✅ Current tab ki saari unique tags
+  const allTags = useMemo(() => {
+    const displayTasks = activeTab === "my" ? tasks : sharedTasks;
+    const tagSet = new Set();
+    displayTasks.forEach((t) => t.tags?.forEach((tag) => tagSet.add(tag)));
+    return Array.from(tagSet);
+  }, [tasks, sharedTasks, activeTab]);
 
   const handleAuthSuccess = useCallback(() => {
     setLoggedIn(true);
@@ -139,7 +142,6 @@ const App = () => {
     }
   }, [loggedIn, fetchTasks]);
 
-  // Online status set karo
   useEffect(() => {
     if (loggedIn) {
       const userId = localStorage.getItem("userId");
@@ -147,7 +149,6 @@ const App = () => {
     }
   }, [loggedIn]);
 
-  // Polling
   useEffect(() => {
     if (!loggedIn) return;
     pollingRef.current = setInterval(fetchTasks, 15000);
@@ -177,9 +178,10 @@ const App = () => {
     return displayTasks.filter((task) => {
       const matchesSearch = (task.title || "").toLowerCase().includes(search.toLowerCase());
       const matchesFilter = filterStatus === "All" || task.status === filterStatus;
-      return matchesSearch && matchesFilter;
+      const matchesTag = !activeTag || task.tags?.includes(activeTag); // ✅ Tag filter
+      return matchesSearch && matchesFilter && matchesTag;
     });
-  }, [displayTasks, search, filterStatus]);
+  }, [displayTasks, search, filterStatus, activeTag]);
 
   return (
     <BrowserRouter>
@@ -210,13 +212,10 @@ const App = () => {
                     </div>
                     <div className="flex items-center gap-3">
 
-                      {/* ✅ Chat Button */}
                       <button
                         onClick={() => setShowChat(!showChat)}
                         className={`p-2 rounded-xl relative transition-all ${
-                          showChat
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 dark:bg-gray-800"
+                          showChat ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800"
                         }`}
                       >
                         <MessageCircle size={20} />
@@ -227,7 +226,6 @@ const App = () => {
                         )}
                       </button>
 
-                      {/* Notifications */}
                       <div className="relative">
                         <button
                           onClick={() => { setShowNotifications(!showNotifications); setUnreadCount(0); }}
@@ -268,7 +266,6 @@ const App = () => {
                   </div>
                 </header>
 
-                {/* ✅ Chat Sidebar */}
                 <ChatSidebar
                   isOpen={showChat}
                   onClose={() => setShowChat(false)}
@@ -300,7 +297,7 @@ const App = () => {
                   {/* Tabs */}
                   <div className="flex gap-2 bg-white dark:bg-gray-900 p-2 rounded-2xl border dark:border-gray-800 w-fit shadow-sm">
                     <button
-                      onClick={() => { setActiveTab("my"); setEditingTask(null); }}
+                      onClick={() => { setActiveTab("my"); setEditingTask(null); setActiveTag(null); }}
                       className={`px-5 py-2 rounded-xl font-bold text-sm transition-all ${
                         activeTab === "my" ? "bg-blue-600 text-white shadow-md" : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
                       }`}
@@ -311,7 +308,7 @@ const App = () => {
                       </span>
                     </button>
                     <button
-                      onClick={() => { setActiveTab("shared"); setEditingTask(null); }}
+                      onClick={() => { setActiveTab("shared"); setEditingTask(null); setActiveTag(null); }}
                       className={`px-5 py-2 rounded-xl font-bold text-sm transition-all ${
                         activeTab === "shared" ? "bg-purple-600 text-white shadow-md" : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
                       }`}
@@ -349,6 +346,37 @@ const App = () => {
                       </select>
                     </div>
                   </div>
+
+                  {/* ✅ Tag Filter Bar - sirf tab dikhao jab tags hoon */}
+                  {allTags.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-900 px-4 py-3 rounded-2xl border dark:border-gray-800 shadow-sm">
+                      <span className="flex items-center gap-1.5 text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">
+                        <Tag size={12} /> Tags:
+                      </span>
+                      {allTags.map((tag) => (
+                        <button
+                          key={tag}
+                          onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                          className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-all border ${
+                            activeTag === tag
+                              ? "ring-2 ring-offset-1 ring-blue-500 scale-105 " + getTagColor(tag)
+                              : getTagColor(tag) + " opacity-60 hover:opacity-100 hover:scale-105"
+                          }`}
+                        >
+                          {tag}
+                          {activeTag === tag && <X size={10} />}
+                        </button>
+                      ))}
+                      {activeTag && (
+                        <button
+                          onClick={() => setActiveTag(null)}
+                          className="text-xs text-gray-400 hover:text-red-500 font-medium transition-colors ml-1"
+                        >
+                          Clear ✕
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {activeTab === "my" && (
                     <TaskForm onCreate={handleCreateTask} editingTask={editingTask} onUpdate={handleUpdateTask} />
