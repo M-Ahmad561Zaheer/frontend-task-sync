@@ -25,6 +25,7 @@ import {
   MessageCircle,
   Tag,
   X,
+  Sparkles,
 } from "lucide-react";
 
 const App = () => {
