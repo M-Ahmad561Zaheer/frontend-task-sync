@@ -14,6 +14,7 @@ import { updateProfile } from "./services/authService";
 import { setOnlineStatus } from "./services/chatService";
 import { getTagColor } from "./components/TaskForm";
 import { Toaster, toast } from "react-hot-toast";
+import NotificationHandler from "./components/NotificationHandler";
 import {
   Moon,
   Sun,
@@ -228,6 +229,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
+      <NotificationHandler />
 
       <Routes>
         <Route
