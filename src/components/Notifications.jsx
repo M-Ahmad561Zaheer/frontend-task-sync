@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { Bell, BellOff, RefreshCw, Calendar, Clock, Inbox } from "lucide-react";
+import { Bell, RefreshCw, Calendar, Clock, Inbox, CheckCircle2 } from "lucide-react";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -22,7 +22,10 @@ const Notifications = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const data = Array.isArray(res.data) ? res.data : res.data?.notifications || [];
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data?.notifications || [];
+
       setNotifications(data);
     } catch (e) {
       console.error("Failed to load notifications:", e);
@@ -37,94 +40,152 @@ const Notifications = () => {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Helper to determine border color based on keywords in the message
-  const getTypeStyles = (msg) => {
+  const getTypeStyles = (msg = "") => {
     const text = msg.toLowerCase();
-    if (text.includes("overdue") || text.includes("urgent") || text.includes("deleted")) 
-        return "border-red-500 bg-red-50/30 dark:bg-red-900/10";
-    if (text.includes("completed") || text.includes("done") || text.includes("success")) 
-        return "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-900/10";
-    if (text.includes("shared") || text.includes("invited")) 
-        return "border-purple-500 bg-purple-50/30 dark:bg-purple-900/10";
-    return "border-blue-500 bg-blue-50/30 dark:bg-blue-900/10";
+
+    if (
+      text.includes("overdue") ||
+      text.includes("urgent") ||
+      text.includes("deleted")
+    ) {
+      return {
+        card: "border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20",
+        icon: "bg-rose-500",
+      };
+    }
+
+    if (
+      text.includes("completed") ||
+      text.includes("done") ||
+      text.includes("success")
+    ) {
+      return {
+        card: "border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/20",
+        icon: "bg-emerald-500",
+      };
+    }
+
+    if (text.includes("shared") || text.includes("invited")) {
+      return {
+        card: "border-purple-200 dark:border-purple-900/50 bg-purple-50 dark:bg-purple-950/20",
+        icon: "bg-purple-500",
+      };
+    }
+
+    return {
+      card: "border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/20",
+      icon: "bg-blue-500",
+    };
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-2xl rounded-[2rem] p-6 max-h-[500px] flex flex-col w-full transition-all duration-300">
-      
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full max-h-[520px] flex flex-col overflow-hidden rounded-[1.75rem] bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-2xl">
+      <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-200 dark:shadow-none">
-            <Bell size={18} className="text-white" />
+          <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
+            <Bell size={18} />
           </div>
-          <h3 className="font-black text-lg tracking-tight text-gray-800 dark:text-white">Updates</h3>
+
+          <div>
+            <h3 className="font-black text-slate-900 dark:text-white">
+              Updates
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Recent task notifications
+            </p>
+          </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
-            <button 
-                onClick={loadNotifications}
-                disabled={isRefreshing}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-400 active:rotate-180 duration-500"
-            >
-                <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
-            </button>
-            <span className="bg-gray-900 dark:bg-blue-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-tighter">
-                {notifications.length} New
-            </span>
+          <button
+            onClick={loadNotifications}
+            disabled={isRefreshing}
+            className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all"
+          >
+            <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+          </button>
+
+          <span className="bg-slate-900 dark:bg-blue-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black">
+            {notifications.length}
+          </span>
         </div>
       </div>
 
-      {/* Content Area */}
-      <div className="overflow-y-auto flex-1 pr-2 custom-scrollbar space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {loading ? (
-          // Skeleton Loader
           [1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse flex flex-col gap-2 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            <div
+              key={i}
+              className="animate-pulse p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+            >
+              <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4" />
+              <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/2 mt-3" />
             </div>
           ))
         ) : notifications.length > 0 ? (
-          notifications.map((n) => (
-            <div
-              key={n._id}
-              className={`group p-4 rounded-2xl border-l-[6px] transition-all duration-300 hover:translate-x-1 hover:shadow-md ${getTypeStyles(n.message)}`}
-            >
-              <p className="text-sm font-bold text-gray-800 dark:text-gray-200 leading-relaxed">
-                {n.message}
-              </p>
-              
-              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                <div className="flex items-center gap-1">
-                  <Calendar size={12} />
-                  {new Date(n.createdAt).toLocaleDateString()}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock size={12} />
-                  {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          notifications.map((n) => {
+            const styles = getTypeStyles(n.message);
+
+            return (
+              <div
+                key={n._id}
+                className={`group p-4 rounded-2xl border transition-all hover:-translate-y-0.5 hover:shadow-md ${styles.card}`}
+              >
+                <div className="flex gap-3">
+                  <div
+                    className={`w-9 h-9 rounded-xl text-white flex items-center justify-center shrink-0 ${styles.icon}`}
+                  >
+                    <Bell size={15} />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-relaxed">
+                      {n.message}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-3 mt-3 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={12} />
+                        {new Date(n.createdAt).toLocaleDateString()}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <Clock size={12} />
+                        {new Date(n.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                <Inbox size={32} className="text-gray-300 dark:text-gray-700" />
+          <div className="flex flex-col items-center justify-center py-14 text-center">
+            <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl flex items-center justify-center mb-4">
+              <Inbox size={30} className="text-slate-300 dark:text-slate-600" />
             </div>
-            <p className="text-sm font-bold text-gray-500">All caught up!</p>
-            <p className="text-[11px] text-gray-400 mt-1 max-w-[150px]">No new notifications at the moment.</p>
+
+            <p className="text-sm font-black text-slate-600 dark:text-slate-300">
+              All caught up
+            </p>
+
+            <p className="text-xs text-slate-400 mt-1 max-w-[170px]">
+              No new notifications at the moment.
+            </p>
           </div>
         )}
       </div>
 
-      {/* Footer / Hint */}
       {notifications.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
-             <button className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 hover:underline">
-                 Mark all as read
-             </button>
-          </div>
+        <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800">
+          <button className="w-full py-2.5 rounded-xl text-xs font-black text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all flex items-center justify-center gap-2">
+            <CheckCircle2 size={14} />
+            Mark all as read
+          </button>
+        </div>
       )}
     </div>
   );
